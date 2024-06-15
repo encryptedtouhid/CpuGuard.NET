@@ -1,5 +1,5 @@
 # Release Notes for CpuGuard.NET 
-##  Version 1.0.0
+##  Version 1.0.1
 #### Whole Application CPU Limit:
 
     1. Introduced a middleware component to limit CPU usage across the entire ASP.NET Core application.
@@ -9,7 +9,7 @@
     3. When the CPU usage exceeds the specified limit, the middleware responds with HTTP 503 Service Unavailable, indicating that the server is overloaded.
 
 
-##  Version 1.0.1
+##  Version 1.0.2
 #### Whole Application CPU Limit:
 
     1. Added middleware to limit CPU usage for specific requests.
