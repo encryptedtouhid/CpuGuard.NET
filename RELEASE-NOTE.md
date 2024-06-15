@@ -9,8 +9,9 @@
     3. When the CPU usage exceeds the specified limit, the middleware responds with HTTP 503 Service Unavailable, indicating that the server is overloaded.
 
 
-##  Version 1.0.2
-#### Whole Application CPU Limit:
+
+##  Version 1.0.1
+#### Limit CPU Process for a Specific Method:
 
     1. Added middleware to limit CPU usage for specific requests.
     2. Configuration options:
