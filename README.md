@@ -19,9 +19,8 @@ Install the NuGet package:
     app.Run();
 
 ## Resources
-- [Homepage]("")
-- [Documentation]("")
+- [Homepage](https://github.com/encryptedtouhid/CpuGuard.NET)
 - [NuGet Package](https://www.nuget.org/packages/CpuGuard.NET)
 - [Release Notes]("")
 - [Contributing Guidelines](CONTRIBUTING.md)
-- [License](LICENSE.md)
+- [License](LICENSE)
