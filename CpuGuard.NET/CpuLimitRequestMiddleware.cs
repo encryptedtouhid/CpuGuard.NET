@@ -1,19 +1,18 @@
-﻿using CpuGuard.NET.Attributes;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace CpuGuard.NET
 {
-    public class CpuLimitMiddleware
+    public class CpuLimitRequestMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly double _cpuLimitPercentage;
         private readonly TimeSpan _monitoringInterval;
 
-        public CpuLimitMiddleware(RequestDelegate next, double cpuLimitPercentage, TimeSpan monitoringInterval)
+        public CpuLimitRequestMiddleware(RequestDelegate next, double cpuLimitPercentage, TimeSpan monitoringInterval)
         {
             _next = next;
             _cpuLimitPercentage = cpuLimitPercentage;
