@@ -45,4 +45,4 @@ A middleware to limit CPU usage for ASP.NET Core applications. Effortless CPU Us
 - [NuGet Package](https://www.nuget.org/packages/CpuGuard.NET)
 - [Release Notes](RELEASE-NOTE.md)
 - [Contributing Guidelines](CONTRIBUTING.md)
-- [License](LICENSE)
+- [License](LICENSE.md)
