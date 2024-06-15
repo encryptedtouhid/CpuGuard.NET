@@ -6,7 +6,7 @@ A middleware to limit CPU usage for ASP.NET Core applications. Effortless CPU Us
 
 Install the NuGet package:
 
-    dotnet add package AspNetCore.CpuLimiter
+    dotnet add package CpuGuard.NET.CpuLimiter
 
 ## Usage
 
@@ -21,7 +21,7 @@ Install the NuGet package:
 ## Resources
 - [Homepage]("")
 - [Documentation]("")
-- [NuGet Package]("")
+- [NuGet Package](https://www.nuget.org/packages/CpuGuard.NET)
 - [Release Notes]("")
 - [Contributing Guidelines](CONTRIBUTING.md)
 - [License](LICENSE.md)
