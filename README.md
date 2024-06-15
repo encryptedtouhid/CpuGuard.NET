@@ -23,4 +23,4 @@ Install the NuGet package:
 - [NuGet Package](https://www.nuget.org/packages/CpuGuard.NET)
 - [Release Notes](RELEASE-NOTE.md)
 - [Contributing Guidelines](CONTRIBUTING.md)
-- [License](LICENSE)
+- [License](LICENSE.md)
