@@ -24,4 +24,3 @@ Install the NuGet package:
 - [Release Notes]("")
 - [Contributing Guidelines](CONTRIBUTING.md)
 - [License](LICENSE)
-Microsoft.AspNetCore.Http.Abstractions
