@@ -4,12 +4,12 @@ A middleware to limit CPU usage for ASP.NET Core applications. Effortless CPU Us
 
 ## Installation
 
-#### Install the NuGet package:
+Install the NuGet package:
 
     dotnet add package CpuGuard.NET.CpuLimiter
 
 ## Usage
-#### Whole Application CPU Limit Example:
+### Whole Application CPU Limit Example:
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseRouting();
@@ -23,13 +23,12 @@ A middleware to limit CPU usage for ASP.NET Core applications. Effortless CPU Us
             });
         }
 
-
-#### Specific Request CPU Limit Example:
+### Specific Request CPU Limit Example:
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseRouting();
-            
+    
             // Use the specific request CPU limit middleware with 15% CPU limit and 1 second monitoring interval
             app.UseCpuLimitRequestMiddleware(15.0, TimeSpan.FromMilliseconds(1000));
 
@@ -38,7 +37,6 @@ A middleware to limit CPU usage for ASP.NET Core applications. Effortless CPU Us
                 endpoints.MapControllers();
             });
         }
-
 
 ## Resources
 - [Homepage](https://github.com/encryptedtouhid/CpuGuard.NET)

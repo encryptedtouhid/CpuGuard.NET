@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<Nullable>enable</Nullable>
+		<Version>1.0.1</Version>
+		<Authors>Khaled Md Tuhidul Hossain</Authors>
+		<Company>EncryptedTouhid</Company>
+		<Description>A middleware to limit CPU usage for ASP.NET Core applications. Effortless CPU Usage Control for ASP.NET Core Applications.</Description>
+		<PackageTags>cpu limit middleware aspnetcore throttling performance</PackageTags>
+		<RepositoryUrl>https://github.com/encryptedtouhid/CpuGuard.NET</RepositoryUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+		<PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
+	</ItemGroup>
+
+	
+	
+	<ItemGroup>
+	  <None Update="LICENSE">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Update="README.md">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+
+</Project>
