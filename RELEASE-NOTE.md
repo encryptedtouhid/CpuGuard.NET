@@ -10,7 +10,7 @@
 
 
 ##  Version 1.0.1
-#### Whole Application CPU Limit:
+#### Limit CPU Process for a Specific Method:
 
     1. Added middleware to limit CPU usage for specific requests.
     2. Configuration options:
