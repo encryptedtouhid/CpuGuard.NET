@@ -3,20 +3,30 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<Nullable>enable</Nullable>
-		<Version>1.0.2</Version>
+		<Version>2.0.0</Version>
 		<Authors>Khaled Md Tuhidul Hossain</Authors>
 		<Company>EncryptedTouhid</Company>
-		<Description>A middleware to limit CPU usage for ASP.NET Core applications. Effortless CPU Usage Control for ASP.NET Core Applications.</Description>
-		<PackageTags>cpu limit middleware aspnetcore throttling performance</PackageTags>
+		<Description>Comprehensive resource management middleware for ASP.NET Core applications. Features include CPU and memory limiting, gradual throttling, rate limiting, health checks, OpenTelemetry metrics, and a real-time dashboard.</Description>
+		<PackageTags>cpu limit middleware aspnetcore throttling performance memory rate-limiting health-check opentelemetry dashboard</PackageTags>
 		<RepositoryUrl>https://github.com/encryptedtouhid/CpuGuard.NET</RepositoryUrl>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+		<PackageReference Include="OpenTelemetry.Api" Version="1.7.0" />
 		<PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
+		<PackageReference Include="System.Text.Json" Version="8.0.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Dashboard\dashboard.html" />
 	</ItemGroup>
 
 	
