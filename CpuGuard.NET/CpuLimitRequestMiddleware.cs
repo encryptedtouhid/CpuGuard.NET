@@ -18,24 +18,8 @@ namespace CpuGuard.NET
     {
         private readonly RequestDelegate _next;
         private readonly CpuGuardOptions _options;
-        private readonly ResourceMonitorService? _resourceMonitor;
-        private readonly GuardStatsService? _statsService;
-
-        // Legacy constructor for backward compatibility
-        /// <summary>
-        /// Creates a new CpuLimitRequestMiddleware with explicit parameters (legacy).
-        /// </summary>
-        public CpuLimitRequestMiddleware(RequestDelegate next, double cpuLimitPercentage, TimeSpan monitoringInterval)
-        {
-            _next = next;
-            _options = new CpuGuardOptions
-            {
-                MaxCpuPercentage = cpuLimitPercentage,
-                MonitoringInterval = monitoringInterval
-            };
-            _resourceMonitor = null;
-            _statsService = null;
-        }
+        private readonly ResourceMonitorService _resourceMonitor;
+        private readonly GuardStatsService _statsService;
 
         /// <summary>
         /// Creates a new CpuLimitRequestMiddleware with options pattern.
@@ -43,8 +27,8 @@ namespace CpuGuard.NET
         public CpuLimitRequestMiddleware(
             RequestDelegate next,
             IOptions<CpuGuardOptions> options,
-            ResourceMonitorService? resourceMonitor = null,
-            GuardStatsService? statsService = null)
+            ResourceMonitorService resourceMonitor,
+            GuardStatsService statsService)
         {
             _next = next;
             _options = options.Value;
@@ -65,7 +49,7 @@ namespace CpuGuard.NET
             }
 
             // Track request for stats
-            _statsService?.IncrementTotalRequests();
+            _statsService.IncrementTotalRequests();
 
             var process = Process.GetCurrentProcess();
             var startTime = DateTime.UtcNow;
@@ -97,7 +81,7 @@ namespace CpuGuard.NET
                 GuardMetrics.IncrementRequestsThrottled("cpu_request");
 
                 // Increment counter
-                _resourceMonitor?.IncrementThrottled();
+                _resourceMonitor.IncrementThrottled();
 
                 // Raise event
                 var eventArgs = new CpuLimitExceededEventArgs
