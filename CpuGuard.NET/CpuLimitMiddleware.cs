@@ -17,22 +17,7 @@ namespace CpuGuard.NET
     {
         private readonly RequestDelegate _next;
         private readonly CpuGuardOptions _options;
-        private readonly ResourceMonitorService? _resourceMonitor;
-
-        // Legacy constructor for backward compatibility
-        /// <summary>
-        /// Creates a new CpuLimitMiddleware with explicit parameters (legacy).
-        /// </summary>
-        public CpuLimitMiddleware(RequestDelegate next, double cpuLimitPercentage, TimeSpan monitoringInterval)
-        {
-            _next = next;
-            _options = new CpuGuardOptions
-            {
-                MaxCpuPercentage = cpuLimitPercentage,
-                MonitoringInterval = monitoringInterval
-            };
-            _resourceMonitor = null;
-        }
+        private readonly ResourceMonitorService _resourceMonitor;
 
         /// <summary>
         /// Creates a new CpuLimitMiddleware with options pattern.
@@ -40,7 +25,7 @@ namespace CpuGuard.NET
         public CpuLimitMiddleware(
             RequestDelegate next,
             IOptions<CpuGuardOptions> options,
-            ResourceMonitorService? resourceMonitor = null)
+            ResourceMonitorService resourceMonitor)
         {
             _next = next;
             _options = options.Value;
@@ -59,45 +44,13 @@ namespace CpuGuard.NET
                 return;
             }
 
-            // Get CPU usage - prefer background sampled value if available
-            double cpuUsagePercentage;
-
-            if (_resourceMonitor != null)
-            {
-                cpuUsagePercentage = _resourceMonitor.CurrentCpuUsage;
-            }
-            else
-            {
-                // Fallback to per-request measurement
-                var process = Process.GetCurrentProcess();
-                var startTime = DateTime.UtcNow;
-                var startCpuTime = process.TotalProcessorTime;
-
-                await _next(context);
-
-                var endTime = DateTime.UtcNow;
-                var endCpuTime = process.TotalProcessorTime;
-
-                var cpuUsedMs = (endCpuTime - startCpuTime).TotalMilliseconds;
-                var totalMsPassed = (endTime - startTime).TotalMilliseconds;
-
-                cpuUsagePercentage = totalMsPassed > 0
-                    ? (cpuUsedMs / (Environment.ProcessorCount * totalMsPassed)) * 100
-                    : 0;
-
-                // For legacy mode, check after request completes
-                if (cpuUsagePercentage > _options.MaxCpuPercentage)
-                {
-                    await HandleLimitExceeded(context, cpuUsagePercentage);
-                }
-
-                return;
-            }
+            // Get CPU usage from background monitor
+            double cpuUsagePercentage = _resourceMonitor.CurrentCpuUsage;
 
             // Record metric
             GuardMetrics.RecordCpuUsage(cpuUsagePercentage);
 
-            // Check against threshold (pre-request check when using ResourceMonitor)
+            // Check against threshold
             if (cpuUsagePercentage > _options.MaxCpuPercentage)
             {
                 await HandleLimitExceeded(context, cpuUsagePercentage);
@@ -113,7 +66,7 @@ namespace CpuGuard.NET
             GuardMetrics.IncrementRequestsThrottled("cpu");
 
             // Increment counter
-            _resourceMonitor?.IncrementThrottled();
+            _resourceMonitor.IncrementThrottled();
 
             // Raise event
             var eventArgs = new CpuLimitExceededEventArgs
