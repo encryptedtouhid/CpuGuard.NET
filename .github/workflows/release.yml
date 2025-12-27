@@ -39,7 +39,11 @@ jobs:
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        files: ./artifacts/*.nupkg
+        files: |
+          ./artifacts/*.nupkg
+          ./artifacts/*.snupkg
+          README.md
         generate_release_notes: true
+        make_latest: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
