@@ -4,7 +4,7 @@ Comprehensive resource management middleware for ASP.NET Core applications. Prot
 
 ## Dashboard Preview
 
-![CpuGuard.NET Dashboard](dashboard.png)
+![CpuGuard.NET Dashboard](https://raw.githubusercontent.com/encryptedtouhid/CpuGuard.NET/main/dashboard.png)
 
 *Real-time monitoring dashboard with CPU, Memory, Request Statistics, and System Info*
 
