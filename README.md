@@ -2,6 +2,12 @@
 
 Comprehensive resource management middleware for ASP.NET Core applications. Protect your application from overload with CPU limiting, memory limiting, gradual throttling, rate limiting, health checks, OpenTelemetry metrics, and a real-time dashboard.
 
+## Dashboard Preview
+
+![CpuGuard.NET Dashboard](dashboard.png)
+
+*Real-time monitoring dashboard with CPU, Memory, Request Statistics, and System Info*
+
 ## Features
 
 - **CPU Limiting** - Monitor and limit CPU usage across your application
