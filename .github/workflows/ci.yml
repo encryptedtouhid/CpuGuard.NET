@@ -19,13 +19,10 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore CpuGuard.NET.sln
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-
-    - name: Test
-      run: dotnet test --configuration Release --no-build --verbosity normal
+      run: dotnet build CpuGuard.NET.sln --configuration Release --no-restore
 
     - name: Pack (verify)
       run: dotnet pack CpuGuard.NET/CpuGuard.NET.csproj --configuration Release --no-build --output ./artifacts
