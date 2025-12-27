@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CpuGuard.NET Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2d3748;
+        }
+        h1 {
+            color: #00d4ff;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo { font-size: 32px; }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+        .card {
+            background: rgba(22, 33, 62, 0.9);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+        .card h2 {
+            color: #888;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card h2 .icon { font-size: 16px; }
+        .metric {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .metric.cpu { color: #ff6b6b; }
+        .metric.memory { color: #4ecdc4; }
+        .metric.requests { color: #ffe66d; }
+        .sub-metric {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+            display: flex;
+            gap: 16px;
+        }
+        .sub-metric span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .chart-container {
+            height: 180px;
+            margin-top: 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .stat-item {
+            background: rgba(15, 52, 96, 0.5);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-top: 4px;
+        }
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .status.healthy { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .status.healthy::before { background: #2ecc71; }
+        .status.degraded { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
+        .status.degraded::before { background: #f39c12; }
+        .status.unhealthy { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+        .status.unhealthy::before { background: #e74c3c; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .refresh-info {
+            text-align: center;
+            color: #444;
+            font-size: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #2d3748;
+        }
+        .gauge-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 16px;
+        }
+        .gauge-bg {
+            fill: none;
+            stroke: #2d3748;
+            stroke-width: 12;
+        }
+        .gauge-fill {
+            fill: none;
+            stroke-width: 12;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        .gauge-fill.cpu { stroke: #ff6b6b; }
+        .gauge-fill.memory { stroke: #4ecdc4; }
+        .gauge-text {
+            font-size: 24px;
+            font-weight: 700;
+            fill: #fff;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+        .wide-card {
+            grid-column: span 2;
+        }
+        @media (max-width: 768px) {
+            .wide-card { grid-column: span 1; }
+            .dashboard { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><span class="logo">🛡️</span> CpuGuard.NET Dashboard</h1>
+        <span class="status healthy" id="status">Healthy</span>
+    </div>
+
+    <div class="dashboard">
+        <div class="card">
+            <h2><span class="icon">⚡</span> CPU Usage</h2>
+            <div class="gauge-container">
+                <svg viewBox="0 0 120 120">
+                    <circle class="gauge-bg" cx="60" cy="60" r="50"/>
+                    <circle class="gauge-fill cpu" id="cpu-gauge" cx="60" cy="60" r="50"
+                            stroke-dasharray="314" stroke-dashoffset="314"/>
+                    <text class="gauge-text" x="60" y="60" id="cpu-value">--%</text>
+                </svg>
+            </div>
+            <div class="sub-metric">
+                <span>📈 Peak: <strong id="cpu-peak">--</strong>%</span>
+                <span>📊 Avg: <strong id="cpu-avg">--</strong>%</span>
+            </div>
+            <div class="chart-container"><canvas id="cpu-chart"></canvas></div>
+        </div>
+
+        <div class="card">
+            <h2><span class="icon">💾</span> Memory Usage</h2>
+            <div class="gauge-container">
+                <svg viewBox="0 0 120 120">
+                    <circle class="gauge-bg" cx="60" cy="60" r="50"/>
+                    <circle class="gauge-fill memory" id="memory-gauge" cx="60" cy="60" r="50"
+                            stroke-dasharray="314" stroke-dashoffset="314"/>
+                    <text class="gauge-text" x="60" y="60" id="memory-value">--%</text>
+                </svg>
+            </div>
+            <div class="sub-metric">
+                <span>📦 <strong id="memory-used">--</strong> MB</span>
+                <span>/ <strong id="memory-total">--</strong> MB</span>
+            </div>
+            <div class="chart-container"><canvas id="memory-chart"></canvas></div>
+        </div>
+
+        <div class="card">
+            <h2><span class="icon">📊</span> Request Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Total Requests</div>
+                    <div class="stat-value" id="total-requests">--</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Throttled</div>
+                    <div class="stat-value" style="color: #ff6b6b;" id="throttled">--</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Delayed</div>
+                    <div class="stat-value" style="color: #f39c12;" id="delayed">--</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Rate Limited</div>
+                    <div class="stat-value" style="color: #9b59b6;" id="rate-limited">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="icon">⏱️</span> System Info</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Uptime</div>
+                    <div class="stat-value" id="uptime">--</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Last Update</div>
+                    <div class="stat-value" style="font-size: 18px;" id="last-update">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="refresh-info">
+        🔄 Auto-refreshing every 2 seconds | Powered by CpuGuard.NET
+    </div>
+
+    <script>
+        const statsEndpoint = '{{STATS_ENDPOINT}}';
+        const cpuData = { labels: [], data: [] };
+        const memoryData = { labels: [], data: [] };
+        const maxDataPoints = 30;
+
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { display: false },
+                y: {
+                    min: 0,
+                    max: 100,
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#666' }
+                }
+            },
+            plugins: { legend: { display: false } },
+            elements: {
+                point: { radius: 0 },
+                line: { borderWidth: 2 }
+            }
+        };
+
+        const cpuChart = new Chart(document.getElementById('cpu-chart'), {
+            type: 'line',
+            data: {
+                labels: cpuData.labels,
+                datasets: [{
+                    data: cpuData.data,
+                    borderColor: '#ff6b6b',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions
+        });
+
+        const memoryChart = new Chart(document.getElementById('memory-chart'), {
+            type: 'line',
+            data: {
+                labels: memoryData.labels,
+                datasets: [{
+                    data: memoryData.data,
+                    borderColor: '#4ecdc4',
+                    backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions
+        });
+
+        function formatUptime(seconds) {
+            const d = Math.floor(seconds / 86400);
+            const h = Math.floor((seconds % 86400) / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            if (d > 0) return `${d}d ${h}h`;
+            if (h > 0) return `${h}h ${m}m`;
+            return `${m}m ${Math.floor(seconds % 60)}s`;
+        }
+
+        function getStatus(cpu, memory) {
+            if (cpu > 90 || memory > 90) return { class: 'unhealthy', text: 'Unhealthy' };
+            if (cpu > 70 || memory > 70) return { class: 'degraded', text: 'Degraded' };
+            return { class: 'healthy', text: 'Healthy' };
+        }
+
+        function updateGauge(id, value) {
+            const circumference = 314;
+            const offset = circumference - (value / 100) * circumference;
+            document.getElementById(id).style.strokeDashoffset = offset;
+        }
+
+        async function updateDashboard() {
+            try {
+                const response = await fetch(statsEndpoint);
+                const data = await response.json();
+                const now = new Date().toLocaleTimeString();
+
+                const cpu = data.currentCpuUsage;
+                const memory = data.currentMemoryUsage;
+
+                document.getElementById('cpu-value').textContent = cpu.toFixed(0) + '%';
+                document.getElementById('cpu-peak').textContent = data.peakCpuUsage.toFixed(1);
+                document.getElementById('cpu-avg').textContent = data.averageCpuUsage.toFixed(1);
+                updateGauge('cpu-gauge', cpu);
+
+                document.getElementById('memory-value').textContent = memory.toFixed(0) + '%';
+                document.getElementById('memory-used').textContent = (data.currentMemoryBytes / 1024 / 1024).toFixed(0);
+                document.getElementById('memory-total').textContent = (data.totalMemoryBytes / 1024 / 1024).toFixed(0);
+                updateGauge('memory-gauge', memory);
+
+                document.getElementById('total-requests').textContent = data.totalRequests.toLocaleString();
+                document.getElementById('throttled').textContent = data.totalRequestsThrottled.toLocaleString();
+                document.getElementById('delayed').textContent = data.totalRequestsDelayed.toLocaleString();
+                document.getElementById('rate-limited').textContent = data.totalRequestsRateLimited.toLocaleString();
+
+                document.getElementById('uptime').textContent = formatUptime(data.uptimeSeconds);
+                document.getElementById('last-update').textContent = now;
+
+                const status = getStatus(cpu, memory);
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = status.text;
+                statusEl.className = 'status ' + status.class;
+
+                cpuData.labels.push(now);
+                cpuData.data.push(cpu);
+                memoryData.labels.push(now);
+                memoryData.data.push(memory);
+
+                if (cpuData.labels.length > maxDataPoints) {
+                    cpuData.labels.shift();
+                    cpuData.data.shift();
+                    memoryData.labels.shift();
+                    memoryData.data.shift();
+                }
+
+                cpuChart.update('none');
+                memoryChart.update('none');
+            } catch (e) {
+                console.error('Failed to fetch stats:', e);
+            }
+        }
+
+        updateDashboard();
+        setInterval(updateDashboard, 2000);
+    </script>
+</body>
+</html>
