@@ -162,6 +162,46 @@ app.MapCpuGuardDashboard("/cpuguard/dashboard");
 - `GET /cpuguard/stats` - JSON stats summary
 - `GET /cpuguard/stats/full` - Full stats with history
 - `GET /cpuguard/dashboard` - Real-time HTML dashboard
+- `GET /health` - Health check endpoint
+
+### API Response Examples
+
+#### GET /cpuguard/stats
+
+```json
+{
+  "currentCpuUsage": 0.01,
+  "currentMemoryUsage": 1.05,
+  "currentMemoryBytes": 45236224,
+  "totalMemoryBytes": 4294967296,
+  "averageCpuUsage": 0.32,
+  "peakCpuUsage": 14.47,
+  "averageMemoryUsage": 1.21,
+  "peakMemoryUsage": 2.08,
+  "totalRequestsThrottled": 0,
+  "totalRequestsDelayed": 0,
+  "totalRequestsRateLimited": 0,
+  "totalRequests": 0,
+  "uptimeSeconds": 125.45,
+  "lastUpdated": "2025-12-27T14:07:08.921251Z"
+}
+```
+
+#### GET /health
+
+```
+Healthy
+```
+
+#### Rate Limit Headers
+
+When rate limiting is enabled with `IncludeRateLimitHeaders = true`, responses include:
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 45
+```
 
 ## Full Example
 
