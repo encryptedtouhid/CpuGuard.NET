@@ -4,13 +4,19 @@
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<Nullable>enable</Nullable>
 		<Version>2.0.0</Version>
+		<PackageVersion>$(Version)</PackageVersion>
 		<Authors>Khaled Md Tuhidul Hossain</Authors>
 		<Company>EncryptedTouhid</Company>
 		<Description>Comprehensive resource management middleware for ASP.NET Core applications. Features include CPU and memory limiting, gradual throttling, rate limiting, health checks, OpenTelemetry metrics, and a real-time dashboard.</Description>
 		<PackageTags>cpu limit middleware aspnetcore throttling performance memory rate-limiting health-check opentelemetry dashboard</PackageTags>
 		<RepositoryUrl>https://github.com/encryptedtouhid/CpuGuard.NET</RepositoryUrl>
-		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://github.com/encryptedtouhid/CpuGuard.NET</PackageProjectUrl>
+		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -29,19 +35,9 @@
 		<EmbeddedResource Include="Dashboard\dashboard.html" />
 	</ItemGroup>
 
-	
-	
 	<ItemGroup>
-	  <None Update="LICENSE">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	  <None Update="README.md">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
+	  <None Include="..\LICENSE.md" Pack="true" PackagePath="\" />
+	  <None Include="..\README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 </Project>
